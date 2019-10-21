@@ -1,0 +1,5 @@
+*.pyc
+.idea
+venv/Lib/site-packages
+venv/pyvenv.cfg
+venv/Scripts
