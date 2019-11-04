@@ -16,17 +16,18 @@ def main():
     # draw samples and peaks
     plt.plot(peaks.number, peaks.value, '.r')
     plt.plot(list(range(0, len(raw_samples))), raw_samples)
-
-# todo: last job end is right here
+    plt.pause(0.001)
 
     # determine tempo by the first 5 peaks (4 beat durations)
     click = list(peaks.number[0:5])
-    click_duration = pp.get_avg_bpm(click)
     click_duration = pp.get_avg_bpm(click, file.getframerate())
 
-    template_subticks = pp.get_template_subticks_as_timepoints(click_duration)
-    peaks_timepoints = []
+    # acquire template subticks
+    divisors = [3]
+    template_subticks = pp.get_template_subticks_as_timepoints(click_duration, divisors)
 
+# todo: last job end is right here
+    peaks_timepoints = []
     for peak in peaks.number[5:]:
         peaks_timepoints.append(pp.sample_to_timepoint(peak, file.getframerate()))
     subticks = [sorted(pp.get_subticks_as_timepoints(template_subticks, peaks_timepoints))]

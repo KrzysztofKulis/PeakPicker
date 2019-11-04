@@ -88,20 +88,19 @@ def get_peaks_from_samples(samples: List[int], framerate=44100, threshold=12300)
     # return t
 
 
-def get_template_subticks_as_timepoints(click_duration: float) -> List[float]:
+def get_template_subticks_as_timepoints(click_duration: float, divisors: List[int]) -> List[float]:
     """
     :param click_duration:  Input duration of one click measured in seconds
+    :param divisors:        Requested divisors of the beat
     :return:                Set of subdivisions of the input click measured in seconds
     :rtype:                 list[float]
     """
-    subticks = list()
-    # list of click subdivisions (eighth note, eighth note triplet, ...)
-    bases = [1]
-    for base in bases:
+    subticks = set()
+    for base in divisors:
         # add first beat
-        subticks.append(0.0)
-        for part in range(1, base):
-            subticks.append(part * click_duration / base)
+        subticks.add(0.0)
+        for subbeat in range(1, base):
+            subticks.add(subbeat * click_duration / base)
     return [sorted(subticks)][0]
 
 
