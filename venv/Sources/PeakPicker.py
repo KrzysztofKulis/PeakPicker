@@ -2,6 +2,7 @@ import wave
 import struct
 import scipy.signal
 import statistics
+import sys
 from typing import List
 from multipledispatch import dispatch
 
@@ -137,3 +138,32 @@ def get_subticks_as_timepoints(template_subticks, peaks_timepoints):
         for subtick in template_subticks:
             ret_subticks.append(timepoint + subtick)
     return [sorted(ret_subticks)][0]
+
+
+def find_closest_peaks(peaks: Sample, click_duration: float) -> Sample:
+    """
+
+    :param peaks:           List of Peak objects
+    :param click_duration:  Click duration in seconds
+    :return:                List of peaks closest to the input peaks
+    :rtype:                 List[Sample]
+    """
+    closest_peaks = Sample()
+    numbers = []
+    values = []
+    click_duration_in_samples = timepoint_to_sample(click_duration, 44100) + 20
+    requested_peak = peaks.number[0]
+    while requested_peak < peaks.number[-1]:
+        closest = peaks.number[0]
+        closest_idx = 0
+        for idx in range(len(peaks.number)):
+            print(abs(requested_peak - peaks.number[idx]), file=sys.stderr)
+            if abs(requested_peak - peaks.number[idx]) < abs(requested_peak - closest):
+                closest = peaks.number[idx]
+                closest_idx = idx
+        numbers.append(peaks.number[closest_idx])
+        values.append(peaks.value[closest_idx])
+        requested_peak += click_duration_in_samples
+    closest_peaks.number = numbers
+    closest_peaks.value = values
+    return closest_peaks

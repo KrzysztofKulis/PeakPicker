@@ -16,17 +16,23 @@ def main():
     # draw samples and peaks
     plt.plot(peaks.number, peaks.value, '.r')
     plt.plot(list(range(0, len(raw_samples))), raw_samples)
-    plt.pause(0.001)
+    #plt.pause(0.001)
 
     # determine tempo by the first 5 peaks (4 beat durations)
-    click = list(peaks.number[0:5])
-    click_duration = pp.get_avg_bpm(click, file.getframerate())
+    clicks = list(peaks.number[0:5])
+    click_duration = pp.get_avg_bpm(clicks, file.getframerate())
+
+    # find peaks closest to click grid
+    closest = pp.find_closest_peaks(peaks, click_duration)
+    plt.plot(closest.number, closest.value, '^g')
+    #plt.pause(0.001)
 
     # acquire template subticks
     divisors = [3]
     template_subticks = pp.get_template_subticks_as_timepoints(click_duration, divisors)
 
 # todo: last job end is right here
+    # calculate subticks for the peaks
     peaks_timepoints = []
     for peak in peaks.number[5:]:
         peaks_timepoints.append(pp.sample_to_timepoint(peak, file.getframerate()))

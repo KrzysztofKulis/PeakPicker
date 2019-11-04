@@ -8,9 +8,9 @@ class Sample:
     Holds info about sample numbers and their values
     """
     number: List[int]
-    value:  List[float]
+    value:  List[int]
 
-    def __init__(self, number=None, value=None):
+    def __init__(self, number=List[int], value=List[int]):
         self.number = number
         self.value = value
 
