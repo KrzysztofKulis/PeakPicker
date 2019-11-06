@@ -105,6 +105,22 @@ def get_template_subticks_as_timepoints(click_duration: float, divisors: List[in
     return [sorted(subticks)][0]
 
 
+def get_template_subticks(click_duration: float, divisors: List[int], framerate=44100) -> List[int]:
+    """
+    :param click_duration:  Input duration of one click measured in seconds
+    :param divisors:        Requested divisors of the beat
+    :return:                Set of subdivisions of the input click measured in samples
+    :rtype:                 list[int]
+    """
+    subticks = set()
+    for base in divisors:
+        # add first beat
+        subticks.add(0.0)
+        for subbeat in range(1, base):
+            subticks.add(timepoint_to_sample(subbeat * click_duration / base, framerate))
+    return [sorted(subticks)][0]
+
+
 @dispatch(list, int)
 def get_avg_bpm(click: List[int], framerate) -> timepoint_t:
     """
@@ -132,12 +148,12 @@ def get_avg_bpm(click: List[float]) -> sample_num_t:
     return sample_num_t(round(click_mean))
 
 
-def get_subticks_as_timepoints(template_subticks, peaks_timepoints):
+def get_subticks_as_samples(template_subticks, peaks_timepoints) -> List[int]:
     ret_subticks = []
-    for timepoint in peaks_timepoints:
+    for timepoint in peaks_timepoints.number:
         for subtick in template_subticks:
             ret_subticks.append(timepoint + subtick)
-    return [sorted(ret_subticks)][0]
+    return ret_subticks
 
 
 def find_closest_peaks(peaks: Sample, click_duration: float) -> Sample:
