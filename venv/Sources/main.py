@@ -37,10 +37,19 @@ def main():
     # draw subticks
     subticks_y = [30000] * len(subticks)
     plt.plot(subticks, subticks_y, '.g')
-    plt.show()
+    #plt.show()
 
 # todo: last job end is right here
 
+    # calculate differences between peaks and closest subticks
+    diffs = pp.calculate_difference(peaks, subticks)
+
+    # plot the differences
+    diffs_y = [30000] * len(diffs)
+    plt.plot(diffs, diffs_y, '<b')
+
     return
+
+
 if __name__ == "__main__":
     main()

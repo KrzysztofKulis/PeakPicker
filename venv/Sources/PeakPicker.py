@@ -5,6 +5,10 @@ import statistics
 import sys
 from typing import List
 from multipledispatch import dispatch
+from scipy.spatial.distance import cdist
+from numpy import asarray, ndarray, argmin
+import numpy
+from statistics import mean
 
 from Sources.PeakPickerTypes import *
 
@@ -108,6 +112,7 @@ def get_template_subticks_as_timepoints(click_duration: float, divisors: List[in
 def get_template_subticks(click_duration: float, divisors: List[int], framerate=44100) -> List[int]:
     """
     :param click_duration:  Input duration of one click measured in seconds
+    :param framerate:       Input file sample rate
     :param divisors:        Requested divisors of the beat
     :return:                Set of subdivisions of the input click measured in samples
     :rtype:                 list[int]
@@ -182,4 +187,33 @@ def find_closest_peaks(peaks: Sample, click_duration: float) -> Sample:
         requested_peak += click_duration_in_samples
     closest_peaks.number = numbers
     closest_peaks.value = values
+    return closest_peaks
+
+
+def find_nearest(array, value):
+    array = asarray(array)
+    idx = (numpy.abs(array - value)).argmin()
+    return idx
+
+
+def calculate_difference(peaks: Sample, subticks: List[int]) -> List[int]:
+    """
+
+    :param peaks:           List of Peak objects
+    :param Sample:          Click duration in seconds
+    :param subticks:        Subticks to be compared with input peaks
+    :return:                List of peaks closest to the input peaks
+    :rtype:                 List[Sample]
+    """
+    closest_peaks = list()
+    diff = list()
+
+    for peak in peaks.number:
+        idx = int(find_nearest(subticks, peak).item())
+        closest_peaks.append(int(subticks[idx]))
+        diff.append(int(peak - subticks[idx]))
+
+    # get average difference
+    average_diff = int(mean(diff))
+
     return closest_peaks
